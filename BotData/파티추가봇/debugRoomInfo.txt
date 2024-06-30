@@ -1,0 +1,1 @@
+{"isGroupChat": false,"roomName": "DebugRoom","senderName": "/추가 닉:테스트 직업:테스트 무릉:0 스탯:0"}
