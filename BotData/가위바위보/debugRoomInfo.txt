@@ -1,0 +1,1 @@
+{"isGroupChat": false,"roomName": "단톡","senderName": "주기훈바보"}

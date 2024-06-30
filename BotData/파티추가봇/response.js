@@ -19,9 +19,9 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
             if (isDefault) {
                 if (isAdd) {
                     var length = spec.member.length;
-                    spec.member[length] = spec.member[length - 1];
-                    var newMember = spec.member[length - 1];
-                    newMember.isPlaying = true;
+                    spec.member[length] = spec.member[length - 1];//얘는 값복사
+                    var newMember = spec.member[length-1];
+                    newMember.isPlaying = true;//얘는 주소복사인듯?
 
                     if (msg.split("닉:").length == 2) {
                         var name = msg.split("닉:")[1].split(" ")[0];
@@ -49,17 +49,23 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                     if (msg.split("전투력:").length == 2) {
                         var stat = msg.split("전투력:")[1].split(" ")[0];
                         newMember.stat = stat;
-                    }else newMember.stat = 0
-                    if (msg.split("키워드:").length >= 2) {
-                            var keywords = [];
-                            keywords = msg.split("키워드:")[1].split(" ")[0].split(",");
-                            for (var i = 0; i < keywords.length; ++i) {
-                                newMember.keyword[i+1] = keywords[i];
-                            }
+                    }else newMember.stat = 0;
+                    if (msg.split("키워드:").length >= 2) {                            
+                        var keywords = [];
+                        keywords = msg.split("키워드:")[1].split(" ")[0].split(",");
+                        for (var i = 0; i < keywords.length; ++i) {
+                            newMember.keyword[i+1] = keywords[i];
                         }
+                    }
+                    if(msg.split("요일:").length >= 2) {
+                        var days = msg.split("요일:")[1].split(" ")[0].split(",");
+                        for (var i = 0; i<days.length; ++i){
+                            newMember.days[i] = days[i];
+                        }
+                    }else newMember.days = [];
                 } else if (isEdit) {
                     var index = -1;
-
+                    //수정할 캐릭터 인덱스 찾기
                     if (msg.split("닉:").length == 2) {
                         var name = msg.split("닉:")[1].split(" ")[0];
                         for (var i = 0; i < spec.member.length - 1; ++i) {
@@ -68,7 +74,7 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             }
                         }
                     }
-
+                    //수정
                     if (index == -1) {
                         replier.reply("그런애없음");
                         return;
@@ -86,13 +92,21 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                             var keywords = [];
                             keywords = msg.split("키워드:")[1].split(" ")[0].split(",");
                             var count = thisMember.keyword.length;
-                            for (var i = count; i < count + keywords.length; ++i) {
+                            for (var i = count; i < count + keywords.length; ++i) {//현존에 이어붙여 추가
                                 thisMember.keyword[i] = keywords[i - count];
+                            }
+                        }
+                        if (msg.split("요일:").length >= 2) {
+                            var days = msg.split("요일:")[1].split(" ")[0].split(",");
+                            for(var i=0; i<days.length;++i){
+                                thisMember.days[i] = days[i];//기존에 아예 덮어쓰기
                             }
                         }
 
                     }
                 }
+                if(!(isAdd||isEdit)) return;
+                //바뀐 spec 출력하는듯
                 Database.writeString(fileName, JSON.stringify(spec));
 
                 var spec2 = Database.readObject(fileName);
@@ -107,6 +121,9 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName,
                         "\n약 " + spec2.member[i].moorng + "층"
                         + "\n전투력 : " + spec2.member[i].stat / 10000 + "만"
                         + "\n키워드 : " + keywords +"\n";
+                    
+                        var days = spec2.member[i].days;
+                        reply += "요일 : " + days +"\n";
                 }
                 replier.reply(reply);
             }

@@ -1,0 +1,1 @@
+{"isGroupChat": false,"roomName": "자괴감","senderName": "Debug"}
